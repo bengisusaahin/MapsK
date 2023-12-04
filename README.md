@@ -8,3 +8,7 @@ Added API key from Google Cloud to the manifest file.
 Added a marker in Eiffel and moved the camera
 
 <img src="https://github.com/bengisusaahin/MapsK/blob/main/eiffelTower.png" width = "200" height = "400">
+
+Created menu item and user interface
+
+<img src="https://github.com/bengisusaahin/MapsK/blob/main/UI.png" width = "200" height = "400">
