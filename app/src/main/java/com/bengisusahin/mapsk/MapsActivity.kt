@@ -22,9 +22,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.bengisusahin.mapsk.databinding.ActivityMapsBinding
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
 import com.google.android.material.snackbar.Snackbar
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickListener{
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -33,6 +34,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var permissionLauncher : ActivityResultLauncher<String>
     private lateinit var sharedPreferences: SharedPreferences
     private var trackBoolean : Boolean? = null
+    private var selectedLatitude : Double? = null
+    private var selectedLongitude : Double? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +52,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         sharedPreferences = this.getSharedPreferences("com.bengisusahin.mapsk", MODE_PRIVATE)
         trackBoolean = false
+        selectedLatitude = 0.0
+        selectedLongitude = 0.0
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.setOnMapLongClickListener(this)
+
 
         //casting
         locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
@@ -122,5 +129,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this@MapsActivity,"Permission needed!", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onMapLongClick(p0: LatLng) {
+        mMap.clear() //daha once eklenmis marker varsa silicek
+        mMap.addMarker(MarkerOptions().position(p0))
+        selectedLatitude = p0.latitude
+        selectedLongitude = p0.longitude
     }
 }
