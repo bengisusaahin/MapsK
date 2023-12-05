@@ -1,10 +1,11 @@
-package com.bengisusahin.mapsk
+package com.bengisusahin.mapsk.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.bengisusahin.mapsk.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.bengisusahin.mapsk
+package com.bengisusahin.mapsk.view
 
 import android.Manifest
 import android.content.SharedPreferences
@@ -14,7 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
+import com.bengisusahin.mapsk.R
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
