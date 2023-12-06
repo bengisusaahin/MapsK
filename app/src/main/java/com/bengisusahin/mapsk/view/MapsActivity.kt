@@ -3,6 +3,7 @@ package com.bengisusahin.mapsk.view
 import android.Manifest
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -29,6 +30,9 @@ import com.bengisusahin.mapsk.roomdb.PlaceDao
 import com.bengisusahin.mapsk.roomdb.PlaceDatabase
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickListener{
 
@@ -43,6 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     private var selectedLongitude : Double? = null
     private lateinit var db : PlaceDatabase
     private lateinit var placeDao : PlaceDao
+    val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +67,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
         selectedLatitude = 0.0
         selectedLongitude = 0.0
 
-        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places")
+            //.allowMainThreadQueries()
+            .build()
         placeDao = db.placeDao()
 
     }
@@ -150,15 +157,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     }
 
     fun save(view: View){
+
+        //Main thread UI, Default -> CPU, IO Thread Internet / Database
+
     //null gelmiceklerini biliyoruz, gelmesinin tek ihtimali onMapte p0 ın boş gelmesi o da pek karşılaşılmaz
         //ama yine de kontrol edebiliriz
         if (selectedLatitude != null && selectedLongitude != null){
             val place = Place(binding.placeText.text.toString(), selectedLatitude!!, selectedLongitude!!)
-            placeDao.insert(place)
+            //placeDao.insert(place)
+            compositeDisposable.add(
+                placeDao.insert(place)
+                    .subscribeOn(Schedulers.io()) //arka planda çalıştır
+                    .observeOn(AndroidSchedulers.mainThread()) //main threadde gözlemle
+                    .subscribe(this::handleResponse) // bitince de bunu çalıştır
+            )
         }
+    }
+
+    private fun handleResponse(){
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
     }
 
     fun delete(view: View){
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        compositeDisposable.clear()
     }
 }

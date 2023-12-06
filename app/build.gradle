@@ -59,4 +59,5 @@ dependencies {
     // optional - RxJava3 support for Room
     implementation "androidx.room:room-rxjava3:$room_version"
     //ek bişisi var
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
 }
