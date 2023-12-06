@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 import com.bengisusahin.mapsk.R
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,6 +24,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.bengisusahin.mapsk.databinding.ActivityMapsBinding
+import com.bengisusahin.mapsk.model.Place
+import com.bengisusahin.mapsk.roomdb.PlaceDao
+import com.bengisusahin.mapsk.roomdb.PlaceDatabase
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
 import com.google.android.material.snackbar.Snackbar
 
@@ -37,6 +41,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     private var trackBoolean : Boolean? = null
     private var selectedLatitude : Double? = null
     private var selectedLongitude : Double? = null
+    private lateinit var db : PlaceDatabase
+    private lateinit var placeDao : PlaceDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +61,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
         trackBoolean = false
         selectedLatitude = 0.0
         selectedLongitude = 0.0
+
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+        placeDao = db.placeDao()
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -140,7 +150,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     }
 
     fun save(view: View){
-
+    //null gelmiceklerini biliyoruz, gelmesinin tek ihtimali onMapte p0 ın boş gelmesi o da pek karşılaşılmaz
+        //ama yine de kontrol edebiliriz
+        if (selectedLatitude != null && selectedLongitude != null){
+            val place = Place(binding.placeText.text.toString(), selectedLatitude!!, selectedLongitude!!)
+            placeDao.insert(place)
+        }
     }
 
     fun delete(view: View){
