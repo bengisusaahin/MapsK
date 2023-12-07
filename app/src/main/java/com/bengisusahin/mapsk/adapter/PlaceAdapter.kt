@@ -8,7 +8,7 @@ import com.bengisusahin.mapsk.databinding.RecyclerRowBinding
 import com.bengisusahin.mapsk.model.Place
 import com.bengisusahin.mapsk.view.MapsActivity
 
-class PlaceAdapter(val plaList: List<Place>) : RecyclerView.Adapter<PlaceAdapter.PlaceHolder>() {
+class PlaceAdapter(val placeList: List<Place>) : RecyclerView.Adapter<PlaceAdapter.PlaceHolder>() {
     class PlaceHolder(val recyclerRowBinding: RecyclerRowBinding) : RecyclerView.ViewHolder(recyclerRowBinding.root){
 
     }
@@ -19,13 +19,15 @@ class PlaceAdapter(val plaList: List<Place>) : RecyclerView.Adapter<PlaceAdapter
     }
 
     override fun getItemCount(): Int {
-        return plaList.size
+        return placeList.size
     }
 
     override fun onBindViewHolder(holder: PlaceHolder, position: Int) {
-        holder.recyclerRowBinding.recyclerViewTextView.text = plaList.get(position).name
+        holder.recyclerRowBinding.recyclerViewTextView.text = placeList.get(position).name
         holder.itemView.setOnClickListener{
             val intent = Intent(holder.itemView.context, MapsActivity::class.java)
+            intent.putExtra("selectedPlace", placeList.get(position)) //kendi sınıfımızı yollarken serializzable yapmamız gerekiyor Place e donup cpnstructor a ekledik
+            intent.putExtra("info","old")
             holder.itemView.context.startActivity(intent)
         }
     }
